@@ -1,20 +1,27 @@
-name: Gold Price Tracker
+name: Gold Monitor Workflow
 
 on:
   schedule:
-    - cron: '0 8 * * *'  # هر روز صبح ساعت ۸ اتوماتیک اجرا میشه!
-  workflow_dispatch:      # دکمه دستی برای اجرا کردن هر وقت خواستی
+    - cron: '0 */6 * * *'   # هر ۶ ساعت یک‌بار خودکار اجرا میشه
+  workflow_dispatch:          # دکمه اجرای دستی توی تب Actions
 
 jobs:
-  track:
+  run-gold-monitor:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Check out repository
+        uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+
       - name: Install dependencies
-        run: pip install requests
-      - name: Run Tracker
-        run: python gold.py
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run Gold Monitor Script
+        run: python main.py
